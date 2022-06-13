@@ -5,8 +5,8 @@ const app = express()
 const port = 8080
 
 async function getData() {
-  
-  const url = `http://carfromjapan.com/cheap-used-toyota-for-sale?keywords=gx81&sort=-createdAt&limit=999&minYear=1989&maxYear=1993`
+
+  const url = `https://carfromjapan.com/cheap-used-toyota-for-sale?keywords=gx81&sort=-createdAt&limit=999&minYear=1989&maxYear=1993`
 
   const browser = await puppeteer.launch({})
   const page = await browser.newPage()
@@ -36,6 +36,7 @@ async function getData() {
     }
   }))
 
+  await browser.close()
   return cars
   
 }
