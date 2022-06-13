@@ -25,6 +25,7 @@ async function getData() {
     const grade = await row.$eval(`td:nth-of-type(6)`, child => child.textContent.slice(6))
     const price = await row.$eval(`td:nth-of-type(7) strong`, child => child.textContent.slice(4))
     const url = await row.$eval(`td:nth-of-type(1)`, child => child.querySelector(`a`).href)
+    const dateScraped = new Date().toISOString()
     return await {
       id,
       model,
@@ -32,7 +33,8 @@ async function getData() {
       mileage,
       grade,
       price,
-      url
+      url,
+      dateScraped
     }
   }))
 
