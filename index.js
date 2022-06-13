@@ -46,7 +46,7 @@ app.get(`/`, async (req, res) => {
 
 app.get(`/api/cars`, (req, res) => {
   getData().then(cars => {
-    res.send(cars)
+    res.send(`hello there`)
   })
 })
 
