@@ -1,7 +1,5 @@
 const puppeteer = require(`puppeteer`)
 const express = require('express')
-const { redirect } = require('express/lib/response')
-const res = require('express/lib/response')
 
 const app = express()
 const port = 8080
@@ -38,7 +36,6 @@ async function getData() {
     }
   }))
 
-  await browser.close()
   return cars
   
 }
