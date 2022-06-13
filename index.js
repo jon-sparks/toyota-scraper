@@ -8,7 +8,9 @@ async function getData() {
 
   const url = `https://carfromjapan.com/cheap-used-toyota-for-sale?keywords=gx81&sort=-createdAt&limit=999&minYear=1989&maxYear=1993`
 
-  const browser = await puppeteer.launch({})
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox']
+  })
   const page = await browser.newPage()
 
   await page.goto(url)
