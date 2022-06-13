@@ -1,0 +1,23 @@
+{
+  "name": "toyota-scraper",
+  "version": "1.0.0",
+  "description": "A node js application to scrape carfromjapan.com to look at car value over time",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jon-sparks/toyota-scraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jon-sparks/toyota-scraper/issues"
+  },
+  "homepage": "https://github.com/jon-sparks/toyota-scraper#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "puppeteer": "^14.3.0"
+  }
+}
