@@ -43,6 +43,10 @@ async function getData() {
   
 }
 
+app.get(`/`, async (req, res) => {
+  res.send(`<h1>GX81 API</h1>`)
+})
+
 getData().then(cars => {
   app.get(`/api/cars`, (req, res) => {
     res.send(cars)
