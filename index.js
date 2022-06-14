@@ -1,12 +1,33 @@
 const puppeteer = require(`puppeteer`)
 const express = require('express')
 
+var cron = require('node-cron')
+var format = require('pg-format')
+
+const { Pool } = require('pg')
+
+const pool = new Pool({
+  ssl: {
+    rejectUnauthorized: false,
+  }
+})
+
 const app = express()
 const port = 8080
 
+const getCarIds = async () => pool.query(`SELECT car_id FROM cars`)
+
+const insertCars = data => {
+  const query = format(`INSERT INTO cars(car_id, model, year, mileage, grade, price, url, date) VALUES %L`, Object.values(data))
+
+  return pool.query(query)
+}
+
+const getCars = async () => pool.query(`SELECT * FROM cars ORDER BY price DESC`)
+
 async function getData() {
 
-  const url = `https://carfromjapan.com/cheap-used-toyota-for-sale?keywords=gx81&sort=-createdAt&limit=999&minYear=1989&maxYear=1993`
+  const url = `https://carfromjapan.com/cheap-used-toyota-for-sale?keywords=gx81&sort=-createdAt&limit=999&minYear=1988&maxYear=1993`
 
   const browser = await puppeteer.launch({
     args: ['--no-sandbox']
@@ -43,18 +64,43 @@ async function getData() {
   
 }
 
+async function process() {
+  getCarIds().then(ids => {
+    console.log(`Processing...`)
+    const idsArray = ids.rows.map(id => id.car_id)
+    getData().then(cars => {
+      const formattedCars = cars.map(car => {
+        return Object.values(car)
+      })
+      const filteredCars = formattedCars.filter(car => {
+        return !idsArray.includes(car[0])
+      })
+      if (filteredCars.length) {
+        console.log(`Adding ${filteredCars.length} cars to DB...`)
+        insertCars(filteredCars)
+      }
+      console.log(`No new cars to add`)
+    }).then(() => console.log(`Done`))
+  })
+}
+
+cron.schedule('0 0 * * *', () => {
+  console.log('running task at midnight every day')
+  process()
+})
+
 app.get(`/`, async (req, res) => {
   res.send(`<h1>GX81 API</h1>`)
 })
 
 app.get(`/api/cars`, (req, res) => {
-  getData().then(cars => {
-    res.send(cars)
+  getCars().then(cars => {
+    res.send(cars.rows)
   })
 })
 
-app.listen(process.env.PORT || port, () => {
-  console.log(`Server running on port ${port}`)
+app.listen(process?.env?.PORT || port, () => {
+  console.log(`Server running on port ${process?.env?.PORT || port}`)
 })
 
 
