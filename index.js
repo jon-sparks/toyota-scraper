@@ -42,9 +42,9 @@ async function getData() {
     const id = await row.$eval(`td:nth-of-type(2) .text-color`, child => child.textContent)
     const model = await row.$eval(`td:nth-of-type(2) h2`, child => child.textContent)
     const year = await row.$eval(`td:nth-of-type(3)`, child => child.textContent.slice(0, 4))
-    const mileage = await row.$eval(`td:nth-of-type(4)`, child => child.textContent.slice(0, -2))
+    const mileage = await row.$eval(`td:nth-of-type(4)`, child => child.textContent.slice(0, -2).replace(`,`, ``))
     const grade = await row.$eval(`td:nth-of-type(6)`, child => child.textContent.slice(6))
-    const price = await row.$eval(`td:nth-of-type(7) strong`, child => child.textContent.slice(4))
+    const price = await row.$eval(`td:nth-of-type(7) strong`, child => child.textContent.slice(4).replace(`,`, ``))
     const url = await row.$eval(`td:nth-of-type(1)`, child => child.querySelector(`a`).href)
     const dateScraped = new Date().toISOString()
     return await {
