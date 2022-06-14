@@ -64,8 +64,8 @@ async function getData() {
   
 }
 
-cron.schedule('* * * * *', () => {
-  console.log('running a task every minute')
+cron.schedule('0 0 * * *', () => {
+  console.log('running a task at midnight every day')
   getCarIds().then(ids => {
     console.log(`Processing...`)
     const idsArray = ids.rows.map(id => id.car_id)
