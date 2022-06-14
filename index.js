@@ -64,7 +64,8 @@ async function getData() {
   
 }
 
-async function process() {
+cron.schedule('* * * * *', () => {
+  console.log('running a task every minute')
   getCarIds().then(ids => {
     console.log(`Processing...`)
     const idsArray = ids.rows.map(id => id.car_id)
@@ -82,12 +83,8 @@ async function process() {
       console.log(`No new cars to add`)
     }).then(() => console.log(`Done`))
   })
-}
+});
 
-cron.schedule('0 0 * * *', () => {
-  console.log('running task at midnight every day')
-  process()
-})
 
 app.get(`/`, async (req, res) => {
   res.send(`<h1>GX81 API</h1>`)
@@ -99,8 +96,8 @@ app.get(`/api/cars`, (req, res) => {
   })
 })
 
-app.listen(process?.env?.PORT || port, () => {
-  console.log(`Server running on port ${process?.env?.PORT || port}`)
+app.listen(process.env.PORT || port, () => {
+  console.log(`Server running on port ${port}`)
 })
 
 
