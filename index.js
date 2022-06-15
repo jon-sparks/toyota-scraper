@@ -5,6 +5,9 @@ var cron = require('node-cron')
 var format = require('pg-format')
 var cors = require('cors')
 
+const app = express()
+const port = 8080
+
 app.use(
   cors({
     origin: [`https://car-trends-api.herokuapp.com/`, `http://localhost:3000`],
@@ -19,8 +22,7 @@ const pool = new Pool({
   }
 })
 
-const app = express()
-const port = 8080
+
 
 const getCarIds = async () => pool.query(`SELECT car_id FROM cars`)
 
