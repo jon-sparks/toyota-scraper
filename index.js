@@ -7,11 +7,9 @@ var cors = require('cors')
 
 app.use(
   cors({
-      credentials: true,
-      origin: true
+    origin: [`https://car-trends-api.herokuapp.com/`, `http://localhost:3000`],
   })
 );
-app.options('*', cors());
 
 const { Pool } = require('pg')
 
