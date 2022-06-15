@@ -10,7 +10,7 @@ const port = 8080
 
 app.use(
   cors({
-    origin: [`https://car-trends-api.herokuapp.com/`, `http://localhost:3000`],
+    origin: [`https://gx81.netlify.app/`, `http://localhost:3000`],
   })
 );
 
