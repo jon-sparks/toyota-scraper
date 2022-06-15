@@ -8,11 +8,7 @@ var cors = require('cors')
 const app = express()
 const port = 8080
 
-app.use(
-  cors({
-    origin: [`https://cool-rugelach-b33e40.netlify.app/`, `https://gx81.netlify.app/`, `http://localhost:3000`],
-  })
-);
+app.use(cors());
 
 const { Pool } = require('pg')
 
@@ -21,8 +17,6 @@ const pool = new Pool({
     rejectUnauthorized: false,
   }
 })
-
-
 
 const getCarIds = async () => pool.query(`SELECT car_id FROM cars`)
 
