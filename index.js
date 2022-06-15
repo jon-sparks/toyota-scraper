@@ -3,6 +3,15 @@ const express = require('express')
 
 var cron = require('node-cron')
 var format = require('pg-format')
+var cors = require('cors')
+
+app.use(
+  cors({
+      credentials: true,
+      origin: true
+  })
+);
+app.options('*', cors());
 
 const { Pool } = require('pg')
 
