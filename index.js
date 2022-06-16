@@ -67,27 +67,67 @@ async function getData() {
   
 }
 
-cron.schedule('0 0 * * *', () => {
-  console.log('running a task at midnight every day')
+async function getData2() {
+
+  const url = `https://www.beforward.jp/stocklist/client_wishes_id=/description=/make=/model=/fuel=/fob_price_from=/fob_price_to=/veh_type=/steering=/mission=/mfg_year_from=1988/mfg_month_from=/mfg_year_to=1993/mfg_month_to=/mileage_from=/mileage_to=/cc_from=/cc_to=/showmore=/drive_type=/color=/stock_country=/area=/seats_from=/seats_to=/max_load_min=/max_load_max=/veh_type_sub=/view_cnt=100/page=1/sortkey=n/sar=/from_stocklist=1/keyword=gx81/kmode=and/`
+
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox']
+  })
+  const page = await browser.newPage()
+
+  await page.goto(url)
+
+  const carRows = await page.$$(`.stocklist-row:not(.login-banner-table)`)
+
+  const cars = await Promise.all(carRows.map(async (row) => {
+    const id = await row.$eval(`.vehicle-url-link span`, child => child.textContent.replace(/[Ref No. ]/g, ``)).catch(() => false)
+    const model = await row.$eval(`.make-model .vehicle-url-link`, child => child.textContent.replace(/[0-9\n.]/g, ``).trim()).catch(() => false)
+    const year = await row.$eval(`.year .val`, child => child.textContent.replace(/[  *\n]/g, ``).slice(0, 4)).catch(() => false)
+    const mileage = await row.$eval(`.mileage .val`, child => child.textContent.slice(0, -3).replace(/[\n.,km]/g, ``).trim()).catch(() => false)
+    const price = await row.$eval(`.vehicle-price .price`, child => child.textContent.replace(/[,$]/g, ``).trim()).catch(() => false)
+    const grade = ``
+    const url = await row.$eval(`.veh-stock-no`, child => child.querySelector(`a`).href).catch(() => false)
+    const dateScraped = new Date().toISOString()
+    return await {
+      id,
+      model,
+      year,
+      mileage,
+      grade,
+      price,
+      url,
+      dateScraped
+    }
+  }))
+
+  await browser.close()
+  return cars
+  
+}
+
+cron.schedule('10 * * * *', () => {
+  console.log('running a task every 10 minutes')
   getCarIds().then(ids => {
     console.log(`Processing...`)
     const idsArray = ids.rows.map(id => id.car_id)
     getData().then(cars => {
-      const formattedCars = cars.map(car => {
-        return Object.values(car)
-      })
-      const filteredCars = formattedCars.filter(car => {
-        return !idsArray.includes(car[0])
-      })
-      if (filteredCars.length) {
-        console.log(`Adding ${filteredCars.length} cars to DB...`)
-        insertCars(filteredCars)
-      }
-      console.log(`No new cars to add`)
-    }).then(() => console.log(`Done`))
+      getData2().then(cars2 => {
+        const formattedCars = [...cars, ...cars2].map(car => {
+          return Object.values(car)
+        })
+        const filteredCars = formattedCars.filter(car => {
+          return !idsArray.includes(car[0])
+        })
+        if (filteredCars.length) {
+          console.log(`Adding ${filteredCars.length} cars to DB...`)
+          insertCars(filteredCars)
+        }
+        console.log(`No new cars to add`)
+      }).then(() => console.log(`Done`))
+    })
   })
 });
-
 
 app.get(`/`, async (req, res) => {
   res.send(`<h1>GX81 API</h1>`)
