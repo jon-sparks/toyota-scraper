@@ -79,7 +79,7 @@ async function getData2() {
 
   const cars = await Promise.all(carRows.map(async (row) => {
     const id = await row.$eval(`.vehicle-url-link span`, child => child.textContent.replace(/[Ref No. ]/g, ``)).catch(() => false)
-    const model = await row.$eval(`.make-model .vehicle-url-link`, child => child.textContent.replace(/[0-9\n.]/g, ``).trim()).catch(() => false)
+    const model = await row.$eval(`.make-model .vehicle-url-link`, child => child.textContent.replace(/[0-9\n.]/g, ``).trim().toLowerCase()).catch(() => false)
     const year = await row.$eval(`.year .val`, child => child.textContent.replace(/[  *\n]/g, ``).slice(0, 4)).catch(() => false)
     const mileage = await row.$eval(`.mileage .val`, child => child.textContent.slice(0, -3).replace(/[\n.,km]/g, ``).trim()).catch(() => false)
     const price = await row.$eval(`.vehicle-price .price`, child => child.textContent.replace(/[,$]/g, ``).trim()).catch(() => false)
@@ -109,7 +109,7 @@ getCarIds().then(ids => {
   const idsArray = ids.rows.map(id => id.car_id)
   getData().then(cars => {
     getData2().then(cars2 => {
-      const formattedCars = [...cars, ...cars2].map(car => {
+      const formattedCars = [...cars, ...cars2].filter(car => car.model !== `f`).map(car => {
         return Object.values(car)
       })
       const filteredCars = formattedCars.filter(car => {
