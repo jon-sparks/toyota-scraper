@@ -40,7 +40,7 @@ async function getData() {
 
   const cars = await Promise.all(carRows.map(async (row) => {
     const id = await row.$eval(`td:nth-of-type(2) .text-color`, child => child.textContent)
-    const model = await row.$eval(`td:nth-of-type(2) h2`, child => child.textContent)
+    const model = await row.$eval(`td:nth-of-type(2) h2`, child => child.textContent.toLowerCase())
     const year = await row.$eval(`td:nth-of-type(3)`, child => child.textContent.slice(0, 4))
     const mileage = await row.$eval(`td:nth-of-type(4)`, child => child.textContent.slice(0, -2).replace(`,`, ``))
     const grade = await row.$eval(`td:nth-of-type(6)`, child => child.textContent.slice(6))
@@ -109,7 +109,7 @@ getCarIds().then(ids => {
   const idsArray = ids.rows.map(id => id.car_id)
   getData().then(cars => {
     getData2().then(cars2 => {
-      const formattedCars = [...cars, ...cars2].filter(car => car.model !== `f`).map(car => {
+      const formattedCars = [...cars, ...cars2].filter(car => car.model.length > 3).map(car => {
         return Object.values(car)
       })
       const filteredCars = formattedCars.filter(car => {
